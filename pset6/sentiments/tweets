@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+import helpers
+from analyzer import Analyzer
+from termcolor import colored
+
+# TODO
+def main():
+
+    # ensure proper usage
+    if len(sys.argv) != 2:
+        sys.exit("Usage: ./tweets @username")
+
+    # get username
+    name = sys.argv[1].strip('@')
+
+    # get tweets
+    tweets = helpers.get_user_timeline(name, 100)
+
+    # ensure account name exists
+    if tweets == None:
+        sys.exit("User is private or does not exist")
+
+    # initialize analyzer
+    analyzer = Analyzer("positive-words.txt", "negative-words.txt")
+
+    # analyze the tweets
+    for tweet in tweets:
+        score = analyzer.analyze(tweet)
+        if score > 0:
+            print(colored("{} {}".format(score, tweet), "green"))
+        elif score < 0:
+            print(colored("{} {}".format(score, tweet), "red"))
+        else:
+            print(colored("{} {}".format(score, tweet), "yellow"))
+
+if __name__ == "__main__":
+    main()
